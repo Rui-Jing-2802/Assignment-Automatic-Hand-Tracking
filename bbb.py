@@ -56,11 +56,12 @@ def detect_hands_in_frame(frame_path):
 video_dir = "./data/test_JPEG"
 frames = sorted([os.path.join(video_dir, f) for f in os.listdir(video_dir) if f.endswith('.jpg')])
 
-
 hand_bboxes = {}
 for frame_path in frames:
     frame_name = os.path.basename(frame_path)
     hand_bboxes[frame_name] = detect_hands_in_frame(frame_path)
+
+
 
 
 # Load SAM2 predictor
@@ -90,35 +91,3 @@ for out_frame_idx, out_obj_ids, out_mask_logits in predictor.propagate_in_video(
         out_obj_id: (out_mask_logits[i] > 0.0).cpu().numpy()
         for i, out_obj_id in enumerate(out_obj_ids)
     }
-
-# Create output video with masks
-output_video_path = "./output_video.mp4"
-frame_height, frame_width, _ = cv2.imread(frames[0]).shape
-out_video = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (frame_width, frame_height))
-
-for frame_idx, frame_path in enumerate(frames):
-    frame = cv2.imread(frame_path)
-    if frame_idx in video_segments:
-        for mask in video_segments[frame_idx].values():
-            mask = cv2.resize(mask, (frame_width, frame_height)).astype(np.uint8) * 255
-            frame[mask > 0] = [0, 0, 255]  # Using red color to mask hands
-    out_video.write(frame)
-
-out_video.release()
-
-
-# output_frames_dir = "./output_frames"
-# os.makedirs(output_frames_dir, exist_ok=True)
-
-# for frame_idx, frame_path in enumerate(frames):
-#     frame = cv2.imread(frame_path)
-#     if frame_idx in video_segments:
-#         for mask in video_segments[frame_idx].values():
-#             mask = cv2.resize(mask, (frame.shape[1], frame.shape[0])).astype(np.uint8) * 255
-#             # Apply the mask color (e.g., red for hands)
-#             frame[mask > 0] = [0, 0, 255]  # Red for hands
-#     # Save the frame with masks
-#     output_frame_path = os.path.join(output_frames_dir, f"{frame_idx:05d}.jpg")
-#     cv2.imwrite(output_frame_path, frame)
-
-# print(f"Output frames saved in: {output_frames_dir}")
