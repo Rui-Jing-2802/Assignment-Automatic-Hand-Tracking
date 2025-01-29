@@ -45,7 +45,9 @@ ffmpeg -i  input_video.mp4  -q:v  2  -start_number  0  output_frames/%05d.jpg
 4.  **Post-Processing**:
     
     -   Stored individual frames in ./frame_outputs/ and merge the frames into the final video:
-      <video src="./output_video.mp4" controls width="800"></video>
+
+https://github.com/user-attachments/assets/800245ef-47fc-404f-8646-78aca5f6b057
+
 
 
 
