@@ -1,26 +1,13 @@
 
-# Assignment-Automatic-Hand-Tracking
+# Automatic-Hand-Tracking
 
-  
+## Goal
+The goal for this project is to build an automatic pipeline that tracks hand movements in a video using SAM2 and Mediapipe's Hand Landmarker. This project focuses on extracting precise masks of hands from video frames to enable downstream tasks such as gesture recognition, interaction modeling, or hand pose estimation.
 
-## Data Pre-processing
-
-  
-
-The individual frames were extracted from the video and stored in the path ./data/test_JPEG/ using the `ffmpeg` command-line tool:
-```bash
-ffmpeg -i  input_video.mp4  -q:v  2  -start_number  0  output_frames/%05d.jpg
-```
-
-  
 
 ## Set Up
 
-  
-
-1. download a model checkpoint. All the model checkpoints can be downloaded by running:
-
-  
+1. Download a model checkpoint. All the model checkpoints can be downloaded by running:
 
 ```bash
 cd checkpoints && \
@@ -36,15 +23,43 @@ or individually from:
 
 2. To ensure reproducibility, you can configure the Python environment using the provided `requirements.txt` file.
  
+
+## Work Pipeline
+
+1.  **Data-preprocessing**:
+	- The individual frames were extracted from the video and stored in the path ./data/test_JPEG/ using the `ffmpeg` command-line tool:
+```bash
+ffmpeg -i  input_video.mp4  -q:v  2  -start_number  0  output_frames/%05d.jpg
+```
+2.  **Hand Detection and Prompt Generation**:
+    References: [Google MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker), [Google Colab Sample](https://colab.research.google.com/github/googlesamples/mediapipe/blob/main/examples/hand_landmarker/python/hand_landmarker.ipynb)
+    -   Mediapipe Hand Landmarker detects 21 hand landmarks per hand.
+    -   Key landmarks (e.g., wrist, fingertips) are filtered and used as positive click prompts.
+    -   Negative click prompts are placed in non-hand regions (e.g., background) to prevent mask spillovers.
+
+3.  **Mask Creation with SAM2**:
+   
+    -   Bounding boxes around hand landmarks are generated to constrain segmentation regions.
+    -   Click prompts and bounding boxes are fed into SAM2 to create masks for the hands in each frame.
+    
+4.  **Post-Processing**:
+    
+    -   Stored individual frames in ./frame_outputs/ and merge the frames into the final video:
+      <video src="./output_video.mp4" controls width="800"></video>
+
+
+
 ## Future Work
 ### Problems unsolved
+The generated video is not yet perfect with the following problems unsolved:
 1. Frame 27 in the output have mask on the face and arm
 2. Frame 176 to 187 have the right hand not fully masked, most likely caused because two hands folded
 3. The masks in the generated video are rough and imprecise, with the problems of rough edges (the edges of the masks are jagged and do not accurately align with the hand contours) and incomplete coverage (certain parts of the hands, especially around the fingers and wrists, are not fully covered by the masks)
 
 ### Potential solutions
-1. Filter key landmarks to reduce the amount of clicks
-2. 
+1. Filter key landmarks to reduce the excessive clicks
+2. Using z coordinate of landmarks, which represents the landmark depth, with the depth at the wrist being the origin, to better handle hand overlaps.
+3. Creating multiple sub-masks to divide hand and arm
 
 ## Citation
 
