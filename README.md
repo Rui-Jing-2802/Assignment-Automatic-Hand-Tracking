@@ -34,7 +34,7 @@ ffmpeg -i  input_video.mp4  -q:v  2  -start_number  0  output_frames/%05d.jpg
 2.  **Hand Detection and Prompt Generation**:
     References: [Google MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker), [Google Colab Sample](https://colab.research.google.com/github/googlesamples/mediapipe/blob/main/examples/hand_landmarker/python/hand_landmarker.ipynb)
     -   Mediapipe Hand Landmarker detects 21 hand landmarks per hand.
-    -   Key landmarks (e.g., wrist, fingertips) are filtered and used as positive click prompts.
+    -   Using landmarks (e.g., wrist, fingertips) as positive click prompts.
     -   Negative click prompts are placed in non-hand regions (e.g., background) to prevent mask spillovers.
 
 3.  **Mask Creation with SAM2**:
@@ -44,9 +44,7 @@ ffmpeg -i  input_video.mp4  -q:v  2  -start_number  0  output_frames/%05d.jpg
     
 4.  **Post-Processing**:
     
-    -   Stored individual frames in ./frame_outputs/ and merge the frames into the final video:
-[[Output_video]](https://github.com/user-attachments/assets/3329a5eb-add2-409e-be08-6e0e2d39b56d)
-
+    -   Stored individual frames in ./frame_outputs/ and merge the frames into the output_video.mp4 
 
 
 
